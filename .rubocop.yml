@@ -1,0 +1,40 @@
+---
+require:
+  - rubocop-minitest
+  - rubocop-performance
+  - rubocop-sorbet
+
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - bundle/vendor/**/*
+    - vendor/**/*
+    - bin/*
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - test/**/*
+
+Metrics/ClassLength:
+  Enabled: true
+  Exclude:
+    - test/**/*
+
+Minitest/MultipleAssertions:
+  Max: 5
+
+Naming/InclusiveLanguage:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+  ConsistentQuotesInMultiline: true
