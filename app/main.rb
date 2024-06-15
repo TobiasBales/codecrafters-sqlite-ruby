@@ -1,6 +1,7 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative "buffer_backed"
 require_relative "header"
 require_relative "page"
 

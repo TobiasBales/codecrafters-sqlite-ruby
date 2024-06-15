@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 class Page
-  attr_reader :data
+  include BufferBacked
 
   def initialize(data)
     @data = data
@@ -32,23 +32,12 @@ class Page
   private
 
   def first_page?
-    data[0, 16] == "SQLite format 3\0"
+    @data[0, 16] == "SQLite format 3\0"
   end
 
-  def btree_offset
+  def buffer_offset
     return 100 if first_page?
 
     0
-  end
-
-  def read_from(offset, size)
-    @data[btree_offset + offset, size]
-  end
-
-  def int_at(offset)
-    data = read_from(offset, 2).unpack1("n")
-    raise "Failed to read int from #{offset}" unless data
-
-    data
   end
 end
