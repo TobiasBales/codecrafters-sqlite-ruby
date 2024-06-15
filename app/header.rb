@@ -100,6 +100,10 @@ class Header
     read_long(56)
   end
 
+  def database_encoding_string
+    ENCODINGS[database_encoding]
+  end
+
   def user_version
     read_long(60)
   end
@@ -122,24 +126,5 @@ class Header
 
   def sqlite_version
     read_long(96)
-  end
-
-  def print
-    puts "database page size:  #{page_size}"
-    puts "write format:        #{write_format}"
-    puts "read format:         #{read_format}"
-    puts "reserved bytes:      #{reserved_bytes}"
-    puts "file change counter: #{file_change_counter}"
-    puts "database page count: #{page_count}"
-    puts "freelist page count: #{freelist_page_count}"
-    puts "schema cookie:       #{schema_cookie}"
-    puts "schema format:       #{schema_format}"
-    puts "default cache size:  #{default_page_cache_size}"
-    puts "autovacuum top root: #{largest_root_page}"
-    puts "incremental vacuum:  #{incremental_vacuum}"
-    puts "text encoding:       #{database_encoding} (#{ENCODINGS[database_encoding]})"
-    puts "user version:        #{user_version}"
-    puts "application id:      #{application_id}"
-    puts "software version:    #{sqlite_version}"
   end
 end

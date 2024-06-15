@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "buffer_backed"
+require_relative "db_info"
 require_relative "header"
 require_relative "page"
 
@@ -12,7 +13,6 @@ if command == ".dbinfo"
   File.open(database_file_path, "rb") do |database_file|
     header_data = database_file.read(100)
     header = Header.new(header_data)
-    header.print
 
     database_file.seek(0)
 
@@ -22,6 +22,6 @@ if command == ".dbinfo"
       pages << Page.new(data)
     end
 
-    puts "number of tables:    #{pages.first.number_of_cells}"
+    puts DbInfo.new(header, pages.first).generate
   end
 end
