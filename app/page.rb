@@ -9,10 +9,11 @@ class Page
   end
 
   def type
+    read_byte(0)
   end
 
   def page_type
-    case @type
+    case type
     when 2
       :interior_index
     when 5
@@ -24,8 +25,27 @@ class Page
     end
   end
 
+  def first_free_block
+    read_int(1)
+  end
+
   def number_of_cells
     read_int(3)
+  end
+
+  def cell_content_offset
+    offset = read_int(5)
+    offset = 65536 if offset == 0
+
+    offset
+  end
+
+  def fragemented_free_bytes
+    read_byte(7)
+  end
+
+  def right_most_pointer
+    read_long(8)
   end
 
   private
