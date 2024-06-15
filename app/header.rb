@@ -4,7 +4,7 @@
 class Header
   VALID_SCHEMA_FORMATS = [1, 2, 3, 4].freeze
   VALID_DATABASE_ENCODINGS = [1, 2, 3].freeze
-  ENCODINGS = {1 => "utf8", 2 => "utf16le", 3 => "utf16be"}.freeze
+  ENCODINGS = { 1 => "utf8", 2 => "utf16le", 3 => "utf16be" }.freeze
 
   class << self
     def from(file)
@@ -75,45 +75,45 @@ class Header
   end
 
   def initialize(
-        page_size:,
-        write_format:,
-        read_format:,
-        reserved_bytes:,
-        file_change_counter:,
-        page_count:,
-        freelist_trunk_page:,
-        freelist_page_count:,
-        schema_cookie:,
-        schema_format:,
-        default_page_cache_size:,
-        largest_root_page:,
-        database_encoding:,
-        user_version:,
-        incremental_vacuum:,
-        application_id:,
-        reserved:,
-        version_valid_for_number:,
-        sqlite_version:
-    )
-        @page_size = page_size
-        @write_format = write_format
-        @read_format = read_format
-        @reserved_bytes = reserved_bytes
-        @file_change_counter = file_change_counter
-        @page_count = page_count
-        @freelist_trunk_page = freelist_trunk_page
-        @freelist_page_count = freelist_page_count
-        @schema_cookie = schema_cookie
-        @schema_format = schema_format
-        @default_page_cache_size = default_page_cache_size
-        @largest_root_page = largest_root_page
-        @database_encoding = database_encoding
-        @user_version = user_version
-        @incremental_vacuum = incremental_vacuum
-        @application_id = application_id
-        @reserved = reserved
-        @version_valid_for_number = version_valid_for_number
-        @sqlite_version = sqlite_version
+    page_size:,
+    write_format:,
+    read_format:,
+    reserved_bytes:,
+    file_change_counter:,
+    page_count:,
+    freelist_trunk_page:,
+    freelist_page_count:,
+    schema_cookie:,
+    schema_format:,
+    default_page_cache_size:,
+    largest_root_page:,
+    database_encoding:,
+    user_version:,
+    incremental_vacuum:,
+    application_id:,
+    reserved:,
+    version_valid_for_number:,
+    sqlite_version:
+  )
+    @page_size = page_size
+    @write_format = write_format
+    @read_format = read_format
+    @reserved_bytes = reserved_bytes
+    @file_change_counter = file_change_counter
+    @page_count = page_count
+    @freelist_trunk_page = freelist_trunk_page
+    @freelist_page_count = freelist_page_count
+    @schema_cookie = schema_cookie
+    @schema_format = schema_format
+    @default_page_cache_size = default_page_cache_size
+    @largest_root_page = largest_root_page
+    @database_encoding = database_encoding
+    @user_version = user_version
+    @incremental_vacuum = incremental_vacuum
+    @application_id = application_id
+    @reserved = reserved
+    @version_valid_for_number = version_valid_for_number
+    @sqlite_version = sqlite_version
   end
 
   def print
