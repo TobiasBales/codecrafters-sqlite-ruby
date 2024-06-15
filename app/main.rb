@@ -4,24 +4,14 @@
 require_relative "buffer_backed"
 require_relative "db_info"
 require_relative "header"
+require_relative "reader"
 require_relative "page"
 
 database_file_path = ARGV[0]
 command = ARGV[1]
 
 if command == ".dbinfo"
-  File.open(database_file_path, "rb") do |database_file|
-    header_data = database_file.read(100)
-    header = Header.new(header_data)
+  header, pages = Reader.read_file(database_file_path)
 
-    database_file.seek(0)
-
-    pages = []
-    header.page_count.times do
-      data = database_file.read(header.page_size)
-      pages << Page.new(data)
-    end
-
-    puts DbInfo.new(header, pages.first).generate
-  end
+  puts DbInfo.new(header, pages.first).generate
 end
