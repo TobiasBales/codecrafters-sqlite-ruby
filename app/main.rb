@@ -10,8 +10,6 @@ command = ARGV[1]
 
 if command == ".dbinfo"
   File.open(database_file_path, "rb") do |database_file|
-    puts "Logs from your program will appear here"
-
     header_data = database_file.read(100)
     header = Header.new(header_data)
     header.print
