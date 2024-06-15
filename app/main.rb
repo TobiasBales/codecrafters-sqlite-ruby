@@ -12,7 +12,8 @@ if command == ".dbinfo"
   File.open(database_file_path, "rb") do |database_file|
     puts "Logs from your program will appear here"
 
-    header = Header.from(database_file)
+    header_data = database_file.read(100)
+    header = Header.new(header_data)
     header.print
 
     database_file.seek(0)

@@ -10,10 +10,23 @@ module BufferBacked
     @data[buffer_offset + offset, size]
   end
 
-  def int_at(offset)
-    data = data(offset, 2).unpack1("n")
-    raise "Failed to read int from #{offset}" unless data
+  def read_string(offset, length)
+    data(offset, length)
+  end
 
-    data
+  def read_byte(offset)
+    data(offset, 1).unpack1("C")
+  end
+
+  def read_bytes(offset, length)
+    data(offset, length).unpack("C*")
+  end
+
+  def read_int(offset)
+    data(offset, 2).unpack1("n")
+  end
+
+  def read_long(offset)
+    data(offset, 4).unpack1("N")
   end
 end

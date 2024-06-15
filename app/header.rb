@@ -2,6 +2,8 @@
 # frozen_string_literal: true
 
 class Header
+  include BufferBacked
+
   VALID_SCHEMA_FORMATS = [1, 2, 3, 4].freeze
   VALID_DATABASE_ENCODINGS = [1, 2, 3].freeze
   ENCODINGS = { 1 => "utf8", 2 => "utf16le", 3 => "utf16be" }.freeze
@@ -9,132 +11,135 @@ class Header
   attr_reader :page_count
   attr_reader :page_size
 
-  class << self
-    def from(file)
-      header_string = file.read(16).unpack("C*").pack("C*")
-      raise "Invalid header string #{header_string}" unless header_string == "SQLite format 3\0"
+  def initialize(data)
+    @data = data
+    raise "Invalid header string #{header_string.inspect}" unless header_string == "SQLite format 3\0"
 
-      page_size = file.read(2).unpack1("n")
-      write_format = file.read(1).unpack1("C")
-      read_format = file.read(1).unpack1("C")
-      reserved_bytes = file.read(1).unpack1("C")
-      maximum_embedded_payload_fraction = file.read(1).unpack1("C")
-      unless maximum_embedded_payload_fraction == 64
-        raise "Invalid maximum_embedded_payload_fraction #{maximum_embedded_payload_fraction}"
-      end
-
-      minimum_embedded_payload_fraction = file.read(1).unpack1("C")
-      unless minimum_embedded_payload_fraction == 32
-        raise "Invalid minimum_embedded_payload_fraction #{minimum_embedded_payload_fraction}"
-      end
-
-      leaf_payload_fraction = file.read(1).unpack1("C")
-      raise "Invalid leaf_payload_fraction #{leaf_payload_fraction}" unless minimum_embedded_payload_fraction == 32
-
-      file_change_counter = file.read(4).unpack1("N")
-      page_count = file.read(4).unpack1("N")
-      freelist_trunk_page = file.read(4).unpack1("N")
-      freelist_page_count = file.read(4).unpack1("N")
-      schema_cookie = file.read(4).unpack1("N")
-      schema_format = file.read(4).unpack1("N")
-      raise "Invalid schema format #{schema_format}" unless VALID_SCHEMA_FORMATS.include?(schema_format)
-
-      default_page_cache_size = file.read(4).unpack1("N")
-      largest_root_page = file.read(4).unpack1("N")
-      database_encoding = file.read(4).unpack1("N")
-      raise "Invalid database encoding #{database_encoding}" unless VALID_DATABASE_ENCODINGS.include?(database_encoding)
-
-      user_version = file.read(4).unpack1("N")
-      incremental_vacuum = file.read(4).unpack1("N")
-      application_id = file.read(4).unpack1("N")
-      reserved = file.read(20).unpack("C*")
-      raise unless reserved.each { |b| b == 0 }
-
-      version_valid_for_number = file.read(4).unpack1("N")
-      sqlite_version = file.read(4).unpack1("N")
-
-      new(
-        page_size:,
-        write_format:,
-        read_format:,
-        reserved_bytes:,
-        file_change_counter:,
-        page_count:,
-        freelist_trunk_page:,
-        freelist_page_count:,
-        schema_cookie:,
-        schema_format:,
-        default_page_cache_size:,
-        largest_root_page:,
-        database_encoding:,
-        user_version:,
-        incremental_vacuum:,
-        application_id:,
-        reserved:,
-        version_valid_for_number:,
-        sqlite_version:,
-      )
+    unless maximum_embedded_payload_fraction == 64
+      raise "Invalid maximum_embedded_payload_fraction #{maximum_embedded_payload_fraction}"
     end
+
+    unless minimum_embedded_payload_fraction == 32
+      raise "Invalid minimum_embedded_payload_fraction #{minimum_embedded_payload_fraction}"
+    end
+
+    raise "Invalid leaf_payload_fraction #{leaf_payload_fraction}" unless leaf_payload_fraction == 32
+
+    raise "Invalid schema format #{schema_format}" unless VALID_SCHEMA_FORMATS.include?(schema_format)
+
+    raise "Invalid database encoding #{database_encoding}" unless VALID_DATABASE_ENCODINGS.include?(database_encoding)
+
+    raise unless reserved.each { |b| b == 0 }
   end
 
-  def initialize(
-    page_size:,
-    write_format:,
-    read_format:,
-    reserved_bytes:,
-    file_change_counter:,
-    page_count:,
-    freelist_trunk_page:,
-    freelist_page_count:,
-    schema_cookie:,
-    schema_format:,
-    default_page_cache_size:,
-    largest_root_page:,
-    database_encoding:,
-    user_version:,
-    incremental_vacuum:,
-    application_id:,
-    reserved:,
-    version_valid_for_number:,
-    sqlite_version:
-  )
-    @page_size = page_size
-    @write_format = write_format
-    @read_format = read_format
-    @reserved_bytes = reserved_bytes
-    @file_change_counter = file_change_counter
-    @page_count = page_count
-    @freelist_trunk_page = freelist_trunk_page
-    @freelist_page_count = freelist_page_count
-    @schema_cookie = schema_cookie
-    @schema_format = schema_format
-    @default_page_cache_size = default_page_cache_size
-    @largest_root_page = largest_root_page
-    @database_encoding = database_encoding
-    @user_version = user_version
-    @incremental_vacuum = incremental_vacuum
-    @application_id = application_id
-    @reserved = reserved
-    @version_valid_for_number = version_valid_for_number
-    @sqlite_version = sqlite_version
+  def header_string
+    read_string(0, 16)
+  end
+
+  def page_size
+    read_int(16)
+  end
+
+  def write_format
+    read_byte(18)
+  end
+
+  def read_format
+    read_byte(19)
+  end
+
+  def reserved_bytes
+    read_byte(20)
+  end
+
+  def maximum_embedded_payload_fraction
+    read_byte(21)
+  end
+
+  def minimum_embedded_payload_fraction
+    read_byte(22)
+  end
+
+  def leaf_payload_fraction
+    read_byte(23)
+  end
+
+  def file_change_counter
+    read_long(24)
+  end
+
+  def page_count
+    read_long(28)
+  end
+
+  def freelist_trunk_page
+    read_long(32)
+  end
+
+  def freelist_page_count
+    read_long(36)
+  end
+
+  def schema_cookie
+    read_long(40)
+  end
+
+  def schema_format
+    read_long(44)
+  end
+
+  def default_page_cache_size
+    read_long(48)
+  end
+
+  def largest_root_page
+    read_long(52)
+  end
+
+  def database_encoding
+    read_long(56)
+  end
+
+  def user_version
+    read_long(60)
+  end
+
+  def incremental_vacuum
+    read_long(64)
+  end
+
+  def application_id
+    read_long(68)
+  end
+
+  def reserved
+    read_bytes(72, 20)
+  end
+
+  def version_valid_for_number
+    read_long(92)
+  end
+
+  def sqlite_version
+    read_long(96)
   end
 
   def print
-    puts "database page size:  #{@page_size}"
-    puts "write format:        #{@write_format}"
-    puts "read format:         #{@read_format}"
-    puts "reserved bytes:      #{@reserved_bytes}"
-    puts "file change counter: #{@file_change_counter}"
-    puts "database page count: #{@page_count}"
-    puts "freelist page count: #{@freelist_page_count}"
-    puts "schema cookie:       #{@schema_cookie}"
-    puts "schema format:       #{@schema_format}"
-    puts "default cache size:  #{@default_page_cache_size}"
-    puts "autovacuum top root: #{@largest_root_page}"
-    puts "incremental vacuum:  #{@incremental_vacuum}"
-    puts "text encoding:       #{@database_encoding} (#{ENCODINGS[@database_encoding]})"
-    puts "user version:        #{@user_version}"
-    puts "application id:      #{@application_id}"
-    puts "software version:    #{@sqlite_version}"
+    puts "database page size:  #{page_size}"
+    puts "write format:        #{write_format}"
+    puts "read format:         #{read_format}"
+    puts "reserved bytes:      #{reserved_bytes}"
+    puts "file change counter: #{file_change_counter}"
+    puts "database page count: #{page_count}"
+    puts "freelist page count: #{freelist_page_count}"
+    puts "schema cookie:       #{schema_cookie}"
+    puts "schema format:       #{schema_format}"
+    puts "default cache size:  #{default_page_cache_size}"
+    puts "autovacuum top root: #{largest_root_page}"
+    puts "incremental vacuum:  #{incremental_vacuum}"
+    puts "text encoding:       #{database_encoding} (#{ENCODINGS[database_encoding]})"
+    puts "user version:        #{user_version}"
+    puts "application id:      #{application_id}"
+    puts "software version:    #{sqlite_version}"
   end
 end

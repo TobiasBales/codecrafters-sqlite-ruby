@@ -9,7 +9,6 @@ class Page
   end
 
   def type
-
   end
 
   def page_type
@@ -26,7 +25,7 @@ class Page
   end
 
   def number_of_cells
-    int_at(3)
+    read_int(3)
   end
 
   private
