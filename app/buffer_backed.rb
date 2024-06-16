@@ -6,29 +6,43 @@ module BufferBacked
     0
   end
 
-  def data(offset, size)
+  def read(offset, size)
     return @data[buffer_offset + offset..] unless size
 
     @data[buffer_offset + offset, size]
   end
 
   def read_string(offset, length)
-    data(offset, length)
+    read(offset, length)
   end
 
   def read_byte(offset)
-    data(offset, 1).unpack1("C")
+    read(offset, 1).unpack1("C")
   end
 
   def read_bytes(offset, length)
-    data(offset, length).unpack("C*")
+    read(offset, length).unpack("C*")
   end
 
   def read_int(offset)
-    data(offset, 2).unpack1("n")
+    read(offset, 2).unpack1("n")
   end
 
   def read_long(offset)
-    data(offset, 4).unpack1("N")
+    read(offset, 4).unpack1("N")
+  end
+
+  def read_varint(offset)
+    first_byte = read_byte(offset)
+    return first_byte if first_byte < 0x80
+
+    second_byte = read_byte(offset + 1)
+    (first_byte & 0x7f) << 8 | second_byte
+  end
+
+  def varint_size(varint)
+    return 2 if varint >= 0x80
+
+    1
   end
 end
