@@ -3,9 +3,9 @@
 
 module Queries
   class Select
-    def initialize(table, column)
+    def initialize(table, columns)
       @table = table
-      @column = column
+      @columns = columns
     end
 
     def execute(pages)
@@ -15,7 +15,11 @@ module Queries
       table_root_page = table_cell.record[:root_page]
 
       root_page = pages[table_root_page - 1]
-      root_page.cells.map { |cell| cell.record[@column] }
+      root_page.cells.map do |cell|
+        @columns.map do |column|
+          cell.record[column]
+        end.join("|")
+      end
     end
   end
 end
