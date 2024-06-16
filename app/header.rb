@@ -8,9 +8,6 @@ class Header
   VALID_DATABASE_ENCODINGS = [1, 2, 3].freeze
   ENCODINGS = { 1 => "utf8", 2 => "utf16le", 3 => "utf16be" }.freeze
 
-  attr_reader :page_count
-  attr_reader :page_size
-
   def initialize(data)
     @data = data
     raise "Invalid header string #{header_string.inspect}" unless header_string == "SQLite format 3\0"
