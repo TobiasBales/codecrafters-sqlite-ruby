@@ -6,9 +6,9 @@ class Page
 
   attr_reader :schema
 
-  def initialize(data)
+  def initialize(data, schema = [:type, :name, :table_name, :root_page, :sql])
     @data = data
-    @schema = [:type, :name, :table_name, :root_page, :sql]
+    @schema = schema
   end
 
   def type
