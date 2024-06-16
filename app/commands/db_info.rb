@@ -3,9 +3,9 @@
 
 module Commands
   class DbInfo
-    def initialize(header, first_page)
+    def initialize(header, pages)
       @header = header
-      @first_page = first_page
+      @pages = pages
     end
 
     def generate
@@ -26,7 +26,7 @@ module Commands
       info << "user version:        #{@header.user_version}\n"
       info << "application id:      #{@header.application_id}\n"
       info << "software version:    #{@header.sqlite_version}\n"
-      info << "number of tables:    #{@first_page.number_of_cells}\n"
+      info << "number of tables:    #{@pages.first.number_of_cells}\n"
     end
   end
 end
