@@ -16,19 +16,18 @@ class Reader
         header.page_count.times do |i|
           data = database_file.read(header.page_size)
           if pages.empty?
-            pages << Page.new(data)
+            first_page = FirstPage.new(data)
+            pages << first_page
+
+            first_page.cells.each do |cell|
+              _table_name, schema = SchemaParser.parse(cell.record[:sql])
+              schema_storage[cell.record[:root_page]] = schema
+            end
           else
             schema = schema_storage[i + 1]
             raise "Could not find schema at for page #{i + 1}" unless schema
 
             pages << Page.new(data, schema)
-          end
-
-          next unless schema_storage.empty?
-
-          pages.first.cells.each do |cell|
-            _table_name, schema = SchemaParser.parse(cell.record[:sql])
-            schema_storage[cell.record[:root_page]] = schema
           end
         end
 
