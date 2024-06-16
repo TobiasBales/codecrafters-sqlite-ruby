@@ -4,8 +4,11 @@
 class Page
   include BufferBacked
 
+  attr_reader :schema
+
   def initialize(data)
     @data = data
+    @schema = [:type, :name, :table_name, :root_page, :sql]
   end
 
   def type
@@ -22,6 +25,23 @@ class Page
       :leaf_index
     when 13
       :leaf_table
+    end
+  end
+
+  def page_header_offset
+    case page_type
+    when :interior_index, :interior_table
+      12
+    when :leaf_index, :leaf_table
+      8
+    else
+      raise "Unsupported type #{type}"
+    end
+  end
+
+  def cells
+    cell_pointers.map do |cell_pointer|
+      Cell.new(read(cell_pointer, nil), page_type, schema)
     end
   end
 
@@ -46,6 +66,13 @@ class Page
 
   def right_most_pointer
     read_long(8)
+  end
+
+  def cell_pointers
+    (0...number_of_cells).map do |i|
+      pointer = read_int(page_header_offset + i * 2)
+      pointer - buffer_offset
+    end
   end
 
   private
