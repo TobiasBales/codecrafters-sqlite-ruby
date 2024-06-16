@@ -7,6 +7,8 @@ module BufferBacked
   end
 
   def data(offset, size)
+    return @data[buffer_offset + offset..] unless size
+
     @data[buffer_offset + offset, size]
   end
 
