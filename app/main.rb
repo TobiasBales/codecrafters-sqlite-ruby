@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "buffer_backed"
-require_relative "db_info"
+require_relative "commands/db_info"
 require_relative "header"
 require_relative "reader"
 require_relative "page"
@@ -13,5 +13,5 @@ command = ARGV[1]
 if command == ".dbinfo"
   header, pages = Reader.read_file(database_file_path)
 
-  puts DbInfo.new(header, pages.first).generate
+  puts Commands::DbInfo.new(header, pages.first).generate
 end
